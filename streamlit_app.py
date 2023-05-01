@@ -51,16 +51,21 @@ def get_hashtags(input_str):
     # clean data
     # remove unnecessary values from output
     remove_values = ['status', 'status_message', '@meta']
+    
     for i in remove_values:
         raw_data.pop(i)
         
     hashtag_list = raw_data['data']['best_30_hashtags']['hashtags']
 
-    top_hashtags = [i.split(',')[0] for i in hashtag_list] 
+    clean_hashtags = [i.split(',')[0] for i in hashtag_list]
+
+    top_hashtags = []
+
+    # add hashtag symbols
+    for i in clean_hashtags:
+        top_hashtags.append('#' + i)        
     
-    #print(top_hashtags)
     return top_hashtags
-    #print(response.json())
     
 # Define the Streamlit app
 def main():
