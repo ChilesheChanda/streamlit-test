@@ -1,5 +1,7 @@
+# import modules
+
 import requests
-import random
+import json
 import streamlit as st
 from streamlit_lottie import st_lottie
 
@@ -30,39 +32,46 @@ with st.container():
 
 st.write("---")
 
-# Set up RapidAPI endpoint URL and API key
-url = "https://hashtagy-generate-hashtags.p.rapidapi.com/v1/comprehensive/tags"
-headers = {
-    "X-RapidAPI-Key": "3f3a735fd4msh3d2a78cf4088122p1491ddjsn194cfd4ef345",
-    "X-RapidAPI-Host": "hashtagy-generate-hashtags.p.rapidapi.com",
-}
+def get_hashtags(input_str):
+    
+    # get hashtag data and load it into raw_data
+    url = "https://hashtagy-generate-hashtags.p.rapidapi.com/v1/comprehensive/tags"
 
+    querystring = {"keyword": input_str}
 
+    headers = {
+        "X-RapidAPI-Key": "3f3a735fd4msh3d2a78cf4088122p1491ddjsn194cfd4ef345",
+        "X-RapidAPI-Host": "hashtagy-generate-hashtags.p.rapidapi.com"
+    }
 
-# Define a function that generates hashtags based on a given input string
-def generate_hashtags(input_string):
-    query_string = {"text": input_string}
-    response = requests.request("GET", url, headers=headers, params=query_string)
-    print(response.text)
+    response = requests.get(url, headers = headers, params = querystring)
+    
+    raw_data = json.loads(response.text)
+    
+    # clean data
+    # remove unnecessary values from output
+    remove_values = ['status', 'status_message', '@meta']
+    for i in remove_values:
+        raw_data.pop(i)
+        
+    hashtag_list = raw_data['data']['best_30_hashtags']['hashtags']
 
-
-    #if response.status_code == 200:
-    #    data = response.json()
-    #    hashtags = data["hashtags"]
-    #    return hashtags
-    #else:
-    #    st.error("Sorry, an error occurred. Please try again later.")
-
+    top_hashtags = [i.split(',')[0] for i in hashtag_list] 
+    
+    print(top_hashtags)
+    #return top_hashtags
+    #print(response.json())
+    
 # Define the Streamlit app
 def main():
     st.title("Hashtag Generator")
-    input_string = st.text_input("Enter some text to generate hashtags for:")
-    if input_string:
+    input_str = st.text_input("Enter some text to generate hashtags for:")
+    if input_str:
         if st.button("Generate Hashtags"):
-            hashtags = generate_hashtags(input_string)
+            hashtags = get_hashtags(input_str)
             if hashtags:
                 st.write("Here are your hashtags:")
-                st.write(hashtags)
+                #st.write(top_hashtags)
             else:
                 st.warning("No hashtags found.")
     st.write("Made by Julia")
