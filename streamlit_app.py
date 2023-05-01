@@ -58,8 +58,8 @@ def get_hashtags(input_str):
 
     top_hashtags = [i.split(',')[0] for i in hashtag_list] 
     
-    print(top_hashtags)
-    #return top_hashtags
+    #print(top_hashtags)
+    return top_hashtags
     #print(response.json())
     
 # Define the Streamlit app
@@ -71,7 +71,7 @@ def main():
             hashtags = get_hashtags(input_str)
             if hashtags:
                 st.write("Here are your hashtags:")
-                #st.write(top_hashtags)
+                st.write(hashtags)
             else:
                 st.warning("No hashtags found.")
     st.write("Made by Julia")
